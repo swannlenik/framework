@@ -7,13 +7,14 @@
  */
 
 namespace Core;
+include "../library/Constants.php";
 
 class View
 {
 
     public static function constructView(): array
     {
-        $config = new \Config\Config();
+        $config = new Config();
         $layout = $config->getPageLayer();
         $returnLayout = [];
 
@@ -26,5 +27,30 @@ class View
         }
 
         return $returnLayout;
+    }
+
+    public static function setDependancies($minified = false) {
+        $dependancies = [];
+        $config = new Config();
+        $modules = explode(",", $config->getConfigurationData("modules"));
+        $npmDir = LIBRARY_DIR . "/node_modules/";
+        $npmHttpDir = $config->getBaseUrl(false) . "library/node_modules/";
+        if(is_dir($npmDir)) {
+            foreach($modules as $module) {
+                $mod = explode(".", $module);
+                if(count($mod) !== 2) {
+                    continue;
+                }
+                $file = $mod[0] . "/dist/" . $mod[1] . "/" . $mod[0] . ($minified ? ".min" : "") . "." . $mod[1];
+                if(!file_exists($npmDir . $file)) {
+                    $file =  $mod[0] . "/dist/" . $mod[0] . ($minified ? ".min" : "") . "." . $mod[1];
+                    if(!file_exists($npmDir . $file)) {
+                        continue;
+                    }
+                }
+                $dependancies[$mod[1]][] = $npmHttpDir . $file;
+            }
+        }
+        return $dependancies;
     }
 }

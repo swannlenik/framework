@@ -9,6 +9,10 @@ include "../library/Constants.php";
  */
 
 class Config {
+    const ROOT_DIR = __DIR__;
+
+    private static $hasHeader;
+    private static $hasFooter;
 
     private $pageLayer = [];
     private $baseUrl = "";
@@ -22,12 +26,16 @@ class Config {
         $configFilePath = ROOT_DIR . "/core/config/config.ini";
         $this->getConfiguration($configFilePath);
 
+
+        self::$hasFooter = defined("HAS_FOOTER") ? HAS_FOOTER : false;
+        self::$hasHeader = defined("HAS_HEADER") ? HAS_HEADER : false;
+
         $this->pageLayer = ["content"=> "content"];
         $this->baseUrl = 'http://' . $_SERVER['HTTP_HOST'];
     }
 
     public static function debugData($data) {
-        if(DEBUG) {
+        if(defined("DEBUG") && DEBUG) {
             echo "<pre>";
             var_dump($data);
             echo "</pre>";
@@ -100,5 +108,15 @@ class Config {
         } else {
             return "Key $key does not exists in configuration !";
         }
+    }
+
+    public static function getRootDir(): string
+    {
+        return dirname(self::ROOT_DIR) . "/";
+    }
+
+    public static function getViewDir(): string
+    {
+        return self::getRootDir() . "view/";
     }
 }

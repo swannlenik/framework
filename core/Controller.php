@@ -39,19 +39,19 @@ class Controller extends Route
     public function __construct(string $controller, string $method, array $parameters = []) {
         parent::__construct($parameters);
         $this->view = new \stdClass();
-        $this->view->url = new \Core\Url();
-        $this->viewDir = \Config\Config::getViewDir();
+        $this->view->url = new Url();
+        $this->viewDir = Config::getViewDir();
 
-        $this->config = new \Core\Config();
-        $this->session = new \Core\Session();
-        $this->db = new \Core\Query($this->config);
+        $this->config = new Config();
+        $this->session = Session::fromSessionArray();
+        $this->db = new Query($this->config);
 
         $this->header['title'] = "Controller : " . $this->controller . " - Vue : " . $this->method;
         $this->footer['copyright'] = "&copy; " . date("Y");
         $this->layout = [];
 
-        $this->controller = $controller ? $controller : DEFAULT_CONTROLLER;
-        $this->method = $method ? $method : DEFAULT_METHOD;
+        $this->controller = $controller ? $controller : (defined("DEFAULT_CONTROLLER") ? DEFAULT_CONTROLLER : "index");
+        $this->method = isset($method) ? $method : (defined("DEFAULT_METHOD") ? DEFAULT_METHOD : "index");
 
         $this->redirect = (bool)$this->config->getConfigurationData("redirect_request");
         $this->api = (bool)$this->config->getConfigurationData("activate_api");
@@ -86,7 +86,7 @@ class Controller extends Route
         $this->setViewVariables();
 
         if(!$this->getApi()) {
-            $this->layout = array_merge($this->layout, \Core\View::constructView());
+            $this->layout = array_merge($this->layout, View::constructView());
 
             if (!method_exists($this, $this->method)) {
                 $this->layout["content"] = $this->viewDir . $this->controller . "/index.php";
@@ -141,6 +141,7 @@ class Controller extends Route
                 $this->$variable = $value;
             }
         }
+        $this->header['dependancies'] = View::setDependancies();
     }
 
     public function getClassName(): string {

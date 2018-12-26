@@ -23,12 +23,8 @@ class Api extends \Core\Controller
 
     public function club_get() {
         $idClub = $this->get['id_club'];
-        //echo "SELECT * FROM club WHERE id_club > " . $idClub;
         $result = $this->db->run("SELECT * FROM club WHERE id_club > " . $idClub);
-
         $encode = json_encode($result->getResult());
-
-        //var_dump($encode);
 
         if($encode) {
             http_response_code(STATUS_QUERY_OK);

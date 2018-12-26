@@ -9,6 +9,7 @@
 namespace Controller;
 
 use \Core\Controller as CoreController;
+use Core\Session;
 
 class Index extends CoreController
 {
@@ -37,7 +38,33 @@ class Index extends CoreController
     }
 
     public function view_get() {
+        echo "VIEW GET";
         $this->view();
+    }
+
+    public function session() {
+    }
+
+    public function session_get() {
+    /*
+        $this->session = new Session($this->get['username'], "abcd");
+        $this->session->registerSession();
+
+
+
+        exit();
+
+        //$this->session->regenerateSession($this->session->getUser()->getUserName());
+        $this->session = new Session($this->get['username'], "abcd");
+        $this->session->registerSession();
+        */
+        echo "<hr />";
+        var_dump($this->session);
+        var_dump($_SESSION);
+        echo "<hr />";
+
+        exit(date("h:i:s"));
+
     }
 
 }
