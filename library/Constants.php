@@ -2,8 +2,6 @@
 // DEFINITION DES REPERTOIRES
 define('ROOT_DIR', dirname(__DIR__));
 define('LIBRARY_DIR', ROOT_DIR . "/library");
-define('CSS_DIR', LIBRARY_DIR . "/css");
-define('JS_DIR', LIBRARY_DIR . "/js");
 define('THIRD_PARTY_DIR', LIBRARY_DIR . "/third_party");
 
 // DEFINITION DES TYPES DE REQUETES HTTP
