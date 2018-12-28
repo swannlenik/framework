@@ -9,18 +9,42 @@ include "../library/Constants.php";
  */
 
 class Config {
+    /**
+     *
+     */
     const ROOT_DIR = __DIR__;
 
+    /**
+     * @var bool
+     */
     private static $hasHeader;
+    /**
+     * @var bool
+     */
     private static $hasFooter;
 
+    /**
+     * @var array
+     */
     private $pageLayer = [];
+    /**
+     * @var string
+     */
     private $baseUrl = "";
 
+    /**
+     * @var array
+     */
     private $configurationData = [];
 
+    /**
+     * @var Config
+     */
     private static $instance;
 
+    /**
+     * Config constructor.
+     */
     public function __construct()
     {
         $configFilePath = ROOT_DIR . "/core/config/config.ini";
@@ -34,6 +58,10 @@ class Config {
         $this->baseUrl = 'http://' . $_SERVER['HTTP_HOST'];
     }
 
+    /**
+     * Affiche le paramètre au milieu des balises PRE et d'un "var_dump"
+     * @param $data
+     */
     public static function debugData($data) {
         if(defined("DEBUG") && DEBUG) {
             echo "<pre>";
@@ -42,6 +70,9 @@ class Config {
         }
     }
 
+    /**
+     * @param array $layer
+     */
     public function setPageLayer(array $layer) {
         $this->pageLayer = $layer;
         if(!array_key_exists("content", $layer)) {
@@ -49,6 +80,9 @@ class Config {
         }
     }
 
+    /**
+     * @return array
+     */
     public function getPageLayer() {
         $pageLayer = [];
         if(self::$hasHeader) {
@@ -64,6 +98,10 @@ class Config {
         return $pageLayer;
     }
 
+    /**
+     * @param bool $baseUrlWithIndex
+     * @return string
+     */
     public function getBaseUrl(bool $baseUrlWithIndex = true): string {
         if($baseUrlWithIndex) {
             return $this->baseUrl . $_SERVER["PHP_SELF"];
@@ -72,10 +110,17 @@ class Config {
         }
     }
 
+    /**
+     * @return string
+     */
     public function getLibraryUrl(): string {
         return $this->getBaseUrl(false) . "/library/";
     }
 
+    /**
+     * @param bool $baseUrlWithIndex
+     * @return Config
+     */
     public static function getInstance($baseUrlWithIndex = true) {
         if(is_null(self::$instance)) {
             self::$instance = new Config($baseUrlWithIndex);
@@ -83,6 +128,9 @@ class Config {
         return self::$instance;
     }
 
+    /**
+     * @param $configFilePath
+     */
     private function getConfiguration($configFilePath) {
         $configFileContent = explode("\r\n", file_get_contents($configFilePath));
         $this->configurationData = [];
@@ -102,6 +150,10 @@ class Config {
         }
     }
 
+    /**
+     * @param $key
+     * @return mixed|string
+     */
     public function getConfigurationData($key) {
         if(array_key_exists($key, $this->configurationData)) {
             return $this->configurationData[$key];
@@ -110,11 +162,17 @@ class Config {
         }
     }
 
+    /**
+     * @return string
+     */
     public static function getRootDir(): string
     {
         return dirname(self::ROOT_DIR) . "/";
     }
 
+    /**
+     * @return string
+     */
     public static function getViewDir(): string
     {
         return self::getRootDir() . "view/";

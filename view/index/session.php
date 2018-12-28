@@ -1,0 +1,1 @@
+Ca c'est ma VUE de la fonction SESSION ! Heure : <?php echo $this->date; ?>

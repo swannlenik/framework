@@ -33,10 +33,3 @@ define('QUERY_SELECT_TOO_SHORT', 'La requête fournie est incorrecte');
 define('API_AUTHENTICATE_NONE', 'NONE');
 define('API_AUTHENTICATE_KEY', 'KEY');
 define('API_AUTHENTICATE_TOKEN', 'TOKEN');
-
-/**
- * Created by PhpStorm.
- * User: S0078595
- * Date: 02/11/2018
- * Time: 11:17
- */

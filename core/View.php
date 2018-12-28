@@ -12,6 +12,9 @@ include "../library/Constants.php";
 class View
 {
 
+    /**
+     * @return array
+     */
     public static function constructView(): array
     {
         $config = new Config();
@@ -22,13 +25,18 @@ class View
             if($value === "content") {
                 $returnLayout[$value] = "";
             } else {
-                $returnLayout[$value] = \Config\Config::getViewDir() . $value . ".php";
+                $returnLayout[$value] = Config::getViewDir() . $value . ".php";
             }
         }
 
         return $returnLayout;
     }
 
+    /**
+     * Recherche les dépendances existantes et le chemin des fichiers à inclure en fonction de la configuration donnée
+     * @param bool $minified
+     * @return array
+     */
     public static function setDependancies($minified = false) {
         $dependancies = [];
         $config = new Config();

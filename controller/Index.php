@@ -22,6 +22,10 @@ class Index extends CoreController
         $this->view->name = "Swann";
     }
 
+    public function index_post() {
+        $this->index();
+    }
+
     public function view() {
         $this->view->value = "index - view";
 
@@ -46,8 +50,8 @@ class Index extends CoreController
     }
 
     public function session_get() {
-    /*
-        $this->session = new Session($this->get['username'], "abcd");
+
+        /*$this->session = new Session($this->get['username'], "abcd");
         $this->session->registerSession();
 
 
@@ -57,14 +61,21 @@ class Index extends CoreController
         //$this->session->regenerateSession($this->session->getUser()->getUserName());
         $this->session = new Session($this->get['username'], "abcd");
         $this->session->registerSession();
-        */
+        //*/
         echo "<hr />";
         var_dump($this->session);
         var_dump($_SESSION);
         echo "<hr />";
+        var_dump($this->session->sessionIsActive());
+        echo "<hr />";
 
-        exit(date("h:i:s"));
+        $date = new \DateTime();
+        $this->view->date = $date->format("d/m/Y h:i:s");
 
+    }
+
+    public function test() {
+        $this->redirect($this->controller, "view");
     }
 
 }

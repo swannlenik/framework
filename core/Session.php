@@ -33,6 +33,11 @@ class Session
      */
     public $isActive = false;
 
+    /**
+     * Session constructor.
+     * @param string $userName
+     * @param string $cleSession
+     */
     public function __construct($userName = "", $cleSession = "") {
         if($userName !== "" && !$this->sessionIsActive()) {
             $this->cleSession = $cleSession;
@@ -40,6 +45,9 @@ class Session
         }
     }
 
+    /**
+     * @param string $userName
+     */
     public function createSession($userName) {
         session_destroy();
         $this->sessionID = session_create_id($this->cleSession);
@@ -49,6 +57,10 @@ class Session
         session_start();
     }
 
+    /**
+     * Regénérer une session si elle n'est pas expirée
+     * @param string $userName
+     */
     public function regenerateSession($userName) {
         if($this->sessionIsActive()) {
             $this->createSession($userName);
@@ -56,6 +68,9 @@ class Session
         }
     }
 
+    /**
+     * Détruit la session courante et réinitialise l'objet
+     */
     public function destroySession() {
         session_destroy();
         $this->isActive = false;
@@ -63,8 +78,12 @@ class Session
         $this->cleSession = null;
         $this->startTime = null;
         $this->sessionID = null;
+        $this->registerSession();
     }
 
+    /**
+     * @return bool true si la session en cours existe et est active
+     */
     public function sessionIsActive() {
         if(!isset($this->startTime) || !isset($this->user) || !isset($this->sessionID) || (isset($this->isActive) && !$this->isActive)) {
             $this->isActive = false;
@@ -72,15 +91,25 @@ class Session
         }
 
         $sessionExpiration = ini_get("session.gc_maxlifetime");
-        $interval = \DateInterval::createFromDateString($sessionExpiration . " minutes");
-        $this->isActive = session_status() === PHP_SESSION_ACTIVE && $this->isActive && $this->startTime->add($interval) > new \DateTime();
+        $interval = \DateInterval::createFromDateString($sessionExpiration . " seconds");
+        $date = new \DateTime($this->startTime->format("Y-m-d h:i:s"));
+        $date->add($interval);
+
+        $this->isActive = session_status() === PHP_SESSION_ACTIVE && $this->isActive && $date > new \DateTime();
         return $this->isActive;
     }
 
+    /**
+     * Sauvegarde une copie de l'objet SESSION dans la variable globale $_SESSION
+     */
     public function registerSession() {
         $_SESSION = $this->toArray();
     }
 
+    /**
+     * Transforme l'objet SESSION en tableau
+     * @return array
+     */
     private function toArray() {
         $session = [];
         $session['session_id'] = $this->sessionID;
@@ -92,6 +121,10 @@ class Session
         return $session;
     }
 
+    /**
+     * Depuis la variable globale $_SESSION, recrée l'objet SESSION s'il y a lieu
+     * @return Session|null
+     */
     public static function fromSessionArray() {
         if(isset($_SESSION)) {
             $session = new Session();
@@ -116,6 +149,7 @@ class Session
             if(isset($_SESSION['is_active'])) {
                 $session->isActive = $_SESSION['is_active'];
             }
+            $session->isActive = $session->sessionIsActive();
             return $session;
         } else {
             return null;

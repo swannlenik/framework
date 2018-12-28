@@ -1,28 +1,17 @@
 <?php
 namespace Framework;
 
-include "config.php";
 include "library/Constants.php";
 
 use \Core\Route as Route;
-
-/**
- * Created by PhpStorm.
- * User: S0078595
- * Date: 31/10/2018
- * Time: 15:42
- */
-
-/**
- * @param array $dir
- */
+use \Core\Config as Config;
 
 spl_autoload_register(function ($className) {
     if(!class_exists($className))
     @include $className . '.php';
 });
 
-$config = \Core\Config::getInstance();
+Config::getInstance();
 $route = new Route(!empty($_GET) ? $_GET : []);
 
 $controllerClassName = $route->getClassName();

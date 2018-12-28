@@ -24,7 +24,7 @@ class Url
      */
     public function __construct()
     {
-        $this->url = \Config\Config::getInstance()->getBaseUrl();
+        $this->url = Config::getInstance()->getBaseUrl();
     }
 
     /**
@@ -40,6 +40,9 @@ class Url
             $url .= "&m=" . $method;
         }
         foreach($arguments as $key => $argument) {
+            if($key === "c" || $key === "m") {
+                continue;
+            }
             $url .= "&" . $key . "=" . (string)$argument;
         }
         return $url;
