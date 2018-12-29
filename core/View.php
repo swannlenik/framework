@@ -62,12 +62,17 @@ class View
         return $dependancies;
     }
 
+    /**
+     * Retraite la liste des dépendances trouvées - élimination des doublons, tri des résultats
+     * @param array $result
+     */
     private static function treatDependancyList(array &$result) {
         $result = array_unique($result);
         sort($result);
     }
 
     /**
+     * Renvoie la liste des fichiers trouvés correspondant au fichier de dépendance souhaité
      * @param string $dependancy
      * @param string $extension
      * @param string $dir
