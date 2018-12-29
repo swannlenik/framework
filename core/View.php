@@ -37,28 +37,60 @@ class View
      * @param bool $minified
      * @return array
      */
-    public static function setDependancies($minified = false) {
+    public static function setDependancies(bool $minified = false) {
         $dependancies = [];
         $config = new Config();
         $modules = explode(",", $config->getConfigurationData("modules"));
         $npmDir = LIBRARY_DIR . "/node_modules/";
-        $npmHttpDir = $config->getBaseUrl(false) . "library/node_modules/";
+        $npmHttpDir = $config->getBaseUrl(false);
         if(is_dir($npmDir)) {
             foreach($modules as $module) {
                 $mod = explode(".", $module);
                 if(count($mod) !== 2) {
                     continue;
                 }
-                $file = $mod[0] . "/dist/" . $mod[1] . "/" . $mod[0] . ($minified ? ".min" : "") . "." . $mod[1];
-                if(!file_exists($npmDir . $file)) {
-                    $file =  $mod[0] . "/dist/" . $mod[0] . ($minified ? ".min" : "") . "." . $mod[1];
-                    if(!file_exists($npmDir . $file)) {
-                        continue;
-                    }
+                $extension = $minified ? "min." . $mod[1] : $mod[1];
+
+                $result = [];
+                self::getDependancyFile($mod[0], $extension, $npmDir . $mod[0], $result);
+                self::treatDependancyList($result);
+                if(count($result) > 0) {
+                    $dependancies[$mod[1]][] = $npmHttpDir . $result[0];
                 }
-                $dependancies[$mod[1]][] = $npmHttpDir . $file;
             }
         }
         return $dependancies;
+    }
+
+    private static function treatDependancyList(array &$result) {
+        $result = array_unique($result);
+        sort($result);
+    }
+
+    /**
+     * @param string $dependancy
+     * @param string $extension
+     * @param string $dir
+     * @param array $result
+     * @return array
+     */
+    private static function getDependancyFile(string $dependancy, string $extension, string $dir, array &$result) {
+        if(!is_dir($dir)) {
+            return [];
+        }
+        $files = scandir($dir);
+        foreach ( $files as $file) {
+            if(in_array($file, [".",".."])) {
+                continue;
+            }
+            if(is_dir($dir . "/" . $file)) {
+                self::getDependancyFile($dependancy, $extension, $dir . "/" . $file, $result);
+            } else {
+                if($file === $dependancy . "." . $extension) {
+                    $result[] = substr($dir . "/" . $file, strpos($dir, "library"));
+                }
+            }
+        }
+        return $result;
     }
 }
